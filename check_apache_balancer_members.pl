@@ -47,7 +47,7 @@ my $at_least_one_is_ok = 0;
 foreach my $member (@{$results->{'members'}})
 {
     push @problemMembers, $member->{'worker'} if $member->{'status'} =~ /Err/i;
-    $at_least_one_is_ok = 1 if $member->{'status'} eq "Ok";
+    $at_least_one_is_ok = 1 if $member->{'status'} =~ /Ok\s?$/;
 }
 
 $np->nagios_exit('CRITICAL', "No members are Ok; there is a problem") unless $at_least_one_is_ok;
