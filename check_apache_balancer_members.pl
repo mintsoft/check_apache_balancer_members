@@ -3,10 +3,31 @@ use strict;
 use warnings;
 use LWP::Simple;
 use Data::Dump qw(dump);    #libdata-dump-perl
-use Nagios::Plugin;         #libnagios-plugin-perl
 use Web::Scraper;           #libweb-scraper-perl
 
-my $np = Nagios::Plugin->new(
+sub load_module {
+    my @names = @_;
+    my $module;
+    for my $name (@names) {
+        my $file = $name;
+        # requires need either a bare word or a file name
+        $file =~ s{::}{/}gsxm;
+        $file .= '.pm';
+        eval {
+            require $file;
+            $name->import();
+            $module = $name;
+		};
+		last if $module;
+    }
+    return $module;
+}
+
+my $plugin_module;
+
+$plugin_module = load_module( 'Monitoring::Plugin', 'Nagios::Plugin' ); #libmonitoring-plugin-perl or libnagios-plugin-perl
+
+my $np = $plugin_module->new(
     usage => '',
     plugin => $0,
     shortname => "Balancer Members",
