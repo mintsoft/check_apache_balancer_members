@@ -55,8 +55,10 @@ my $s = scraper {
         process 'td:nth-of-type(1)', 'worker' => 'TEXT';
         process 'td:nth-of-type(6)', 'status' => 'TEXT';
         process 'td:nth-of-type(7)', 'elected' => 'TEXT';
-        process 'td:nth-of-type(8)', 'to' => 'TEXT';
-        process 'td:nth-of-type(9)', 'from' => 'TEXT';
+        process 'td:nth-of-type(8)', 'busy' => 'TEXT';
+        process 'td:nth-of-type(9)', 'load' => 'TEXT';
+        process 'td:nth-of-type(10)', 'to' => 'TEXT';
+        process 'td:nth-of-type(11)', 'from' => 'TEXT';
     }
 };
 
@@ -69,6 +71,10 @@ foreach my $member (@{$results->{'members'}})
 {
     push @problemMembers, $member->{'worker'} if $member->{'status'} =~ /Err/i;
     $at_least_one_is_ok = 1 if $member->{'status'} =~ /Ok\s?$/;
+    $np->add_perfdata(label => "elected-$member->{'worker'}", value => $member->{'elected'}, uom => 'c');
+    $np->add_perfdata(label => "busy-$member->{'worker'}", value => $member->{'busy'}, uom => 'rqts');
+    $np->add_perfdata(label => "to-$member->{'worker'}", value => $member->{'to'}, uom => 'Bytes');
+    $np->add_perfdata(label => "from-$member->{'worker'}", value => $member->{'from'}, uom => 'Bytes');
 }
 
 $np->nagios_exit('CRITICAL', "No members are Ok; there is a problem") unless $at_least_one_is_ok;
