@@ -73,8 +73,6 @@ foreach my $member (@{$results->{'members'}})
     $at_least_one_is_ok = 1 if $member->{'status'} =~ /Ok\s?$/;
     $np->add_perfdata(label => "elected-$member->{'worker'}", value => $member->{'elected'}, uom => 'c');
     $np->add_perfdata(label => "busy-$member->{'worker'}", value => $member->{'busy'}, uom => 'rqts');
-    $np->add_perfdata(label => "to-$member->{'worker'}", value => $member->{'to'}, uom => 'Bytes');
-    $np->add_perfdata(label => "from-$member->{'worker'}", value => $member->{'from'}, uom => 'Bytes');
 }
 
 $np->nagios_exit('CRITICAL', "No members are Ok; there is a problem") unless $at_least_one_is_ok;
